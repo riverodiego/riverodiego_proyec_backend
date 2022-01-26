@@ -18,19 +18,25 @@ routerProductos.get('/:id', (req, res) => {
 
 /*SE ENVIA EL BODY MANUAL DESDE POSTMAN */
 routerProductos.put('/:id', (req, res) => {
+
     let parId = parseInt(req.params.id);
     let resultado = productos.find(elem => elem.id === parId);
-    let indice = productos.indexOf(resultado);
-    console.log(indice);
-    if (indice > -1){
-        productos[indice].titulo = (req.body.titulo ? req.body.titulo : resultado.titulo);
-        productos[indice].precio = (req.body.precio ? req.body.precio : resultado.precio);
-        productos[indice].miniatura = (req.body.miniatura ? req.body.miniatura : resultado.miniatura);
-        productos[indice].id = parId;
-        res.status(200).json({msg: `producto Modificado en posicion array: ${indice}`})
-    } else{
-        res.status(500).json({error: `producto no encontrado`})
+    let index = productos.indexOf(resultado);
+
+    let productosActualizar = {
+        titulo: req.body.titulo,
+        precio: req.body.precio,
+        miniatura: req.body.miniatura
     };
+
+    if (index == -1) {
+        res.send({ code: 400, failed: "Producto no Encontrado" });
+    } else {
+        for (let key of Object.keys(productosActualizar)) {
+            productosActualizar[key] && (productos[index][key] = productosActualizar[key])
+        }
+    res.send({ code: 200, mensaje: "Producto Actualizado", data: productos[index]});
+    }
 })
 
 routerProductos.delete('/:id', (req, res) => {
